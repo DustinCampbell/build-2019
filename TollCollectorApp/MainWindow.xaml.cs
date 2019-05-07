@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using CommercialRegistration;
 using ConsumerVehicleRegistration;
@@ -21,6 +22,16 @@ namespace TollCollectorApp
 
             _random = new Random();
             TollSystem.Initialize(this);
+
+            _ = ChargeTollsAsync();
+        }
+
+        private static async Task ChargeTollsAsync()
+        {
+            await foreach (var t in TollSystem.GetVehiclesAsync())
+            {
+                await TollSystem.ChargeTollAsync(t.vehicle, t.time, t.inbound, t.license);
+            }
         }
 
         private string GenerateLicense()
@@ -125,6 +136,11 @@ namespace TollCollectorApp
         void ILogger.SendMessage(string message, LogLevel level)
         {
             lstMessages.Items.Add(message);
+        }
+
+        void ILogger.SendError(Exception ex)
+        {
+            MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace.ToString());
         }
     }
 }

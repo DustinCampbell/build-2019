@@ -12,5 +12,6 @@ namespace TollCollectorLib
     public interface ILogger
     {
         void SendMessage(string message, LogLevel logLevel = LogLevel.Info);
+        void SendError(Exception ex) => SendMessage(ex.Message, LogLevel.Error);
     }
 }
